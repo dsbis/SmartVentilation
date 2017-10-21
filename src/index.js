@@ -98,17 +98,21 @@ function onSessionEnded(sessionEndedRequest, session) {
 }
 
 function handleRoomTemperature(intent, session, callback) {
-    var username = 'igneousstar';
-    var key = 'b9ec16e3156b493a848ed01a1f89e21c';
-    var url = 'mqtts://+ 'username + ':' + key +  '@io.adafruit.com';
-    var mqtt = require('mqtt');
-    var client = mqtt.connect({ url, port: 1883});
+    var mqtt = require('mqtt'),
+      my_topic_name = 'igneousstar/feeds/echo-commands';
+    // var my_topic_name = 'EchoCommands';
 
-    client.on('connect', () =>{
-      client.publish('igneousstar/feeds/Echo&#032Commands', '424242')
-    })
+    var client = mqtt.connect('mqtt://igneousstar:b9ec16e3156b493a848ed01a1f89e21c@io.adafruit.com', 8883);
 
-    console.log("MQTTMQTTMQTTMQTTMQTT: " + mqtt);
+    client.on('connect', () => {
+        console.log("AJKDGFKJASGFKAJSFGKJASGFKAJSGFKJASDGFKJSDHG");
+        client.publish('igneousstar/feeds/echo-commands', 'room2,s66')
+    });
+
+    client.on('error', (error) => {
+      console.log('MQTT Client Errored');
+      console.log(error);
+    });
 
     callback(session.attributes,
         buildSpeechletResponseWithoutCard("quack attack", "", "true"));

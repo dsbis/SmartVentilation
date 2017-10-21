@@ -19,6 +19,9 @@
   "dependencies": {
     "adafruit-io": "^4.4.0",
     "express": "^4.16.2",
-    "forever": "^0.15.3"
+    "forever": "^0.15.3",
+    "https-post": "^0.1.1",
+    "mqtt": "^2.13.1",
+    "request": "^2.83.0"
   }
 }
