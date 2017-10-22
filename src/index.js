@@ -1,25 +1,8 @@
-/**
-
- Copyright 2016 Brian Donohue.
-
-*/
-
 'use strict';
 
-// Route the incoming request based on type (LaunchRequest, IntentRequest,
-// etc.) The JSON body of the request is provided in the event parameter.
 exports.handler = function (event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
-
-        /**
-         * Uncomment this if statement and populate with your skill's application ID to
-         * prevent someone else from configuring a skill that sends requests to this function.
-         */
-
-//     if (event.session.application.applicationId !== "amzn1.echo-sdk-ams.app.05aecccb3-1461-48fb-a008-822ddrt6b516") {
-//         context.fail("Invalid Application ID");
-//      }
 
         if (event.session.new) {
             onSessionStarted({requestId: event.request.requestId}, event.session);
@@ -61,8 +44,8 @@ function onLaunch(launchRequest, session, callback) {
     console.log("onLaunch requestId=" + launchRequest.requestId
         + ", sessionId=" + session.sessionId);
 
-    var cardTitle = "Hello, World!"
-    var speechOutput = "what is up my dudes"
+    var cardTitle = "Welcome to the smart ventilation system!"
+    var speechOutput = "I can help change the temperature of your room to your preference."
     callback(session.attributes,
         buildSpeechletResponse(cardTitle, speechOutput, "", true));
 }
@@ -93,19 +76,16 @@ function onIntent(intentRequest, session, callback) {
 function onSessionEnded(sessionEndedRequest, session) {
     console.log("onSessionEnded requestId=" + sessionEndedRequest.requestId
         + ", sessionId=" + session.sessionId);
-
-    // Add any cleanup logic here
 }
 
 function handleRoomTemperature(intent, session, callback) {
     var mqtt = require('mqtt'),
       my_topic_name = 'igneousstar/feeds/echo-commands';
-    // var my_topic_name = 'EchoCommands';
 
-    var client = mqtt.connect('mqtt://igneousstar:b9ec16e3156b493a848ed01a1f89e21c@io.adafruit.com', 8883);
+    var client = mqtt.connect('mqtt://io.adafruit.com');
 
     client.on('connect', () => {
-        console.log("AJKDGFKJASGFKAJSFGKJASGFKAJSGFKJASDGFKJSDHG");
+        client.subscribe('igneousstar/feeds/echo-commands')
         client.publish('igneousstar/feeds/echo-commands', 'room2,s66')
     });
 
@@ -115,7 +95,7 @@ function handleRoomTemperature(intent, session, callback) {
     });
 
     callback(session.attributes,
-        buildSpeechletResponseWithoutCard("quack attack", "", "true"));
+        buildSpeechletResponseWithoutCard("", "", "true"));
 }
 
 // ------- Helper functions to build responses -------
