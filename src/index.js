@@ -62,7 +62,9 @@ function onIntent(intentRequest, session, callback) {
 
     // dispatch custom intents to handlers here
     if (intentName == 'GetRoomTemperature') {
-        handleRoomTemperature(intent, session, callback);
+        getRoomTemperature(intent, session, callback);
+    } else if (intentName == "SetRoomTemperature"){
+        setRoomTemperature(intent, session, callback);
     }
     else {
         throw "Invalid intent";
@@ -78,15 +80,17 @@ function onSessionEnded(sessionEndedRequest, session) {
         + ", sessionId=" + session.sessionId);
 }
 
-function handleRoomTemperature(intent, session, callback) {
-    var mqtt = require('mqtt'),
-      my_topic_name = 'igneousstar/feeds/echo-commands';
+function getRoomTemperature(intent, session, callback) {
+    var mqtt = require('mqtt');
 
     var client = mqtt.connect('mqtt://io.adafruit.com');
 
+    var targetRoomNumber = intent.slots.RoomNumber.value;
+    var targetRoom = 'Room ' + targetRoomNumber + " Temp";
+    var temp;
+
     client.on('connect', () => {
-        client.subscribe('igneousstar/feeds/echo-commands')
-        client.publish('igneousstar/feeds/echo-commands', 'room2,s66')
+        temp = client.subscribe('igneousstar/feeds/' + targetRoom);
     });
 
     client.on('error', (error) => {
@@ -94,8 +98,36 @@ function handleRoomTemperature(intent, session, callback) {
       console.log(error);
     });
 
+    var message = "The temperature of room " + targetRoomNumber + " is " + temp;
+
     callback(session.attributes,
-        buildSpeechletResponseWithoutCard("", "", "true"));
+        buildSpeechletResponseWithoutCard(message, "", "true"));
+}
+
+function setRoomTemperature(intent, session, callback){
+  var mqtt = require('mqtt');
+
+  var client = mqtt.connect('mqtt://io.adafruit.com');
+
+  var targetRoomNumber = intent.slots.RoomNumber.value;
+  var targetRoom = 'room' + targetRoomNumber;
+  var temperature = intent.slots.Temperature.value;
+  var command = targetRoom + ",s" + temperature;
+
+
+  client.on('connect', () => {
+      client.publish('igneousstar/feeds/echo-commands',command);
+  });
+
+  client.on('error', (error) => {
+    console.log('MQTT Client Errored');
+    console.log(error);
+  });
+
+  var message = "The temperature of room " + targetRoomNumber + " is now set to" + temperature;
+
+  callback(session.attributes,
+      buildSpeechletResponseWithoutCard(message, "", "true"));
 }
 
 // ------- Helper functions to build responses -------
