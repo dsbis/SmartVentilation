@@ -1,3 +1,7 @@
+/*
+* Adapted from code by Brian Donohue
+*/
+
 'use strict';
 
 exports.handler = function (event, context) {
