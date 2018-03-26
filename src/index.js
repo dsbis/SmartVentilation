@@ -4,6 +4,8 @@
 
 'use strict';
 
+const adafruitIO_username = 'example';
+
 exports.handler = function (event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
@@ -94,7 +96,7 @@ function getRoomTemperature(intent, session, callback) {
     var temp;
 
     client.on('connect', () => {
-        temp = client.subscribe('igneousstar/feeds/' + targetRoom);
+        temp = client.subscribe(adafruitIO_username + '/feeds/' + targetRoom);
     });
 
     client.on('error', (error) => {
@@ -120,7 +122,7 @@ function setRoomTemperature(intent, session, callback){
 
 
   client.on('connect', () => {
-      client.publish('igneousstar/feeds/echo-commands',command);
+      client.publish(adafruitIO_username + '/feeds/echo-commands',command); // 
   });
 
   client.on('error', (error) => {
